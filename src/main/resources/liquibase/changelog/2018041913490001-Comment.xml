@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="201804191349" author="ElementCraft">
+        <createTable tableName="comment">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="article_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="good_number" type="int" defaultValue="0"/>
+            <column name="bad_number" type="int" defaultValue="0"/>
+            <column name="comment_number" type="int" defaultValue="0"/>
+            <column name="is_markdown" type="int" defaultValue="1"/>
+            <column name="is_ban" type="int" defaultValue="0"/>
+
+            <column name="content" type="text"/>
+
+            <column name="gmt_create" type="datetime" defaultValueDate="now()"/>
+            <column name="gmt_modified" type="datetime" defaultValueDate="now()"/>
+            <column name="version" type="int" defaultValue="0"/>
+            <column name="is_deleted" type="int" defaultValue="0"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

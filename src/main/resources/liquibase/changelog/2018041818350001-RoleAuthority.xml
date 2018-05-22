@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="201804181835" author="ElementCraft">
+        <createTable tableName="role_authority">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+
+            <column name="role_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="authority_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="gmt_create" type="datetime" defaultValueDate="now()"/>
+            <column name="gmt_modified" type="datetime" defaultValueDate="now()"/>
+            <column name="version" type="int" defaultValue="0"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="201804201901" author="ElementCraft">
+        <createIndex tableName="role_authority" indexName="index_role_id">
+            <column name="role_id"/>
+        </createIndex>
+        <createIndex tableName="role_authority" indexName="index_authority_id">
+            <column name="authority_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

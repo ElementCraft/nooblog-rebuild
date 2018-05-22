@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="201804071815" author="ElementCraft">
+        <createTable tableName="user_favorite">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="article_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="gmt_create" type="datetime" defaultValueDate="now()"/>
+            <column name="gmt_modified" type="datetime" defaultValueDate="now()"/>
+            <column name="version" type="int" defaultValue="0"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="201804201903" author="ElementCraft">
+        <createIndex tableName="user_favorite" indexName="index_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="user_favorite" indexName="index_article_id">
+            <column name="article_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

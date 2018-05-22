@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <include file="classpath:/liquibase/changelog/2018040603510001-Role.xml"/>
+    <include file="classpath:/liquibase/changelog/2018040623050001-SystemConfig.xml"/>
+    <include file="classpath:/liquibase/changelog/2018040701440001-Article.xml"/>
+    <include file="classpath:/liquibase/changelog/2018040701520001-User.xml"/>
+    <include file="classpath:/liquibase/changelog/2018040704180001-UserRole.xml"/>
+    <include file="classpath:/liquibase/changelog/2018040713130001-UserLog.xml"/>
+    <include file="classpath:/liquibase/changelog/2018040716410001-UserColumn.xml"/>
+    <include file="classpath:/liquibase/changelog/2018040718150001-UserFavorite.xml"/>
+    <include file="classpath:/liquibase/changelog/2018040718220001-ArticleLike.xml"/>
+    <include file="classpath:/liquibase/changelog/2018041818210001-Authority.xml"/>
+    <include file="classpath:/liquibase/changelog/2018041818350001-RoleAuthority.xml"/>
+    <include file="classpath:/liquibase/changelog/2018041913490001-Comment.xml"/>
+    <include file="classpath:/liquibase/changelog/2018041913590001-CommentLike.xml"/>
+
+</databaseChangeLog>

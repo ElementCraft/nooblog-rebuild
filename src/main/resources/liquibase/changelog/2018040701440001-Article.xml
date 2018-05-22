@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="201804070144" author="ElementCraft">
+        <createTable tableName="article">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="column_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="type_flag" type="int" defaultValue="1"/>
+            <column name="reprint_url" type="varchar(128)"/>
+            <column name="translate_url" type="varchar(128)"/>
+            <column name="label" type="varchar(128)"/>
+            <column name="is_private" type="int" defaultValue="0"/>
+            <column name="is_top" type="int" defaultValue="0"/>
+            <column name="status" type="int" defaultValue="1"/>
+            <column name="click_number" type="int" defaultValue="0"/>
+            <column name="good_number" type="int" defaultValue="0"/>
+            <column name="bad_number" type="int" defaultValue="0"/>
+            <column name="favorite_number" type="int" defaultValue="0"/>
+            <column name="comment_number" type="int" defaultValue="0"/>
+            <column name="is_markdown" type="int" defaultValue="1"/>
+            <column name="content" type="text"/>
+            <column name="gmt_create" type="datetime" defaultValueDate="now()"/>
+            <column name="gmt_modified" type="datetime" defaultValueDate="now()"/>
+            <column name="version" type="int" defaultValue="0"/>
+            <column name="is_deleted" type="int" defaultValue="0"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="201804201859" author="ElementCraft">
+        <addColumn tableName="article">
+            <column name="last_edit_time" type="datetime" defaultValueDate="now()" afterColumn="is_markdown" />
+        </addColumn>
+        <dropColumn tableName="article" columnName="is_deleted" />
+    </changeSet>
+
+    <changeSet id="201804201907" author="ElementCraft">
+        <createIndex tableName="article" indexName="index_title">
+            <column name="title"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
