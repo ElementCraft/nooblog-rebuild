@@ -33,7 +33,7 @@ public interface JwtConst {
     String AUTHORITIES_CLAIM_KEY = "auths";
 
     /**
-     * JWT包含权限集合信息的KEY
+     * JWT包含密码信息的KEY
      */
     String PASSWORD_CLAIM_KEY = "pwd";
 
@@ -41,4 +41,8 @@ public interface JwtConst {
      * 分割权限字符串的逗号
      */
     String AUTHORITIES_CLAIM_DELIMITER = ",";
+
+    String ISSUER_KEY = "jwt.token.issuer";
+
+    String ISSUER = "noobug.org";
 }

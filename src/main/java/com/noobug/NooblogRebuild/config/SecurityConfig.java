@@ -17,6 +17,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
@@ -40,8 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-            .antMatchers("/api/**").authenticated()
-            .and()
-            .addFilterAfter()
+            .antMatchers("/api/**").permitAll();
     }
 }

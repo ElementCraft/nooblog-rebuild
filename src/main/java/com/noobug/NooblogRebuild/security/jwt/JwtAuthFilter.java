@@ -1,126 +1,60 @@
 package com.noobug.NooblogRebuild.security.jwt;
 
-import com.noobug.NooblogRebuild.domain.User;
-import com.noobug.NooblogRebuild.repository.UserRepository;
-import com.noobug.NooblogRebuild.tools.utils.ConfigUtil;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
-import org.springframework.security.web.server.context.ServerSecurityContextRepository;
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+/**
+ * @author 小王子
+ */
 @Component
-public class AuthFilter implements WebFilter {
+public class JwtAuthFilter extends GenericFilterBean {
+
+    private final Logger log = LoggerFactory.getLogger(JwtAuthFilter.class);
 
     @Autowired
-    private ConfigUtil configUtil;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    private ServerWebExchangeMatcher authMatcher = ServerWebExchangeMatchers.pathMatchers( "/api/user/info", "/api/user/col1", "/api/user/col2", "/api/user/column", "/api/article", "/api/user/article", "/api/user/article/**", "/api/admin/**");
-    private ServerSecurityContextRepository securityContextRepository = NoOpServerSecurityContextRepository.getInstance();
+    private TokenProvider tokenProvider;
 
     @Override
-    public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
-
-        serverWebExchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-
-        // 过滤不需要鉴权的地址 然后对需要鉴权的地址做jwt token转换， 然后验证。
-        return authMatcher.matches(serverWebExchange)
-                .filter(ServerWebExchangeMatcher.MatchResult::isMatch)
-                .switchIfEmpty(webFilterChain.filter(serverWebExchange).then(Mono.empty()))
-                .flatMap(matchResult -> this.convert(serverWebExchange))
-                .flatMap(authentication -> this.auth(serverWebExchange, webFilterChain, authentication));
-    }
-
-    private Mono<Void> auth(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain, Authentication authentication) {
-        SecurityContextImpl securityContext = new SecurityContextImpl();
-        securityContext.setAuthentication(authentication);
-
-        String account = (String) authentication.getPrincipal();
-        String password = (String) authentication.getCredentials();
-
-
-        // 验证用户帐号密码
-        Optional<User> user = userRepository.findByAccountAndPasswordAndBannedAndDeleted(account, password, Boolean.FALSE, Boolean.FALSE);
-        if (!user.isPresent()) {
-            return Mono.empty();
-        }
-
-        serverWebExchange.getResponse().setStatusCode(HttpStatus.OK);
-        return this.securityContextRepository.save(serverWebExchange, securityContext)
-                .then(webFilterChain.filter(serverWebExchange))
-                .subscriberContext(ReactiveSecurityContextHolder.withAuthentication(authentication));
-
-    }
-
-    private Mono<Authentication> convert(ServerWebExchange serverWebExchange) {
-        ServerHttpRequest request = serverWebExchange.getRequest();
-        String authorization = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-
-        if (authorization == null || authorization.isEmpty()) {
-            return Mono.empty();
-        }
-
-        String credentials = authorization.length() <= JwtConst.BEARER.length() ?
-                "" : authorization.substring(JwtConst.BEARER.length(), authorization.length());
-        SignedJWT signedJWT;
-        String secret = configUtil.get(JwtConst.SECRET_KEY, JwtConst.SECRET);
-        String subject;
-        String password;
-        String auths;
-        // 权限集合
-        Collection<? extends GrantedAuthority> authorities;
-
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
         try {
-            signedJWT = SignedJWT.parse(credentials);
-            signedJWT.verify(new MACVerifier(secret));
-
-            subject = signedJWT.getJWTClaimsSet().getSubject();
-            auths = (String) signedJWT.getJWTClaimsSet().getClaim(JwtConst.AUTHORITIES_CLAIM_KEY);
-            password = (String) signedJWT.getJWTClaimsSet().getClaim(JwtConst.PASSWORD_CLAIM_KEY);
-
-            // 权限字符串拆分
-            authorities = Optional.ofNullable(auths)
-                    .map(o -> Stream.of(auths.split(JwtConst.AUTHORITIES_CLAIM_DELIMITER))
-                            .filter(str -> str != null && !str.isEmpty())
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList())
-                    )
-                    .orElse(new ArrayList<>());
-
-        } catch (ParseException e) {
-            return Mono.empty();
-        } catch (JOSEException e) {
-            return Mono.empty();
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            String jwt = resolveToken(httpServletRequest);
+            if (StringUtils.hasText(jwt)) {
+                if (this.tokenProvider.validateToken(jwt)) {
+                    Authentication authentication = this.tokenProvider.getAuthentication(jwt, loginInfoDTO);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
+            filterChain.doFilter(servletRequest, servletResponse);
+        } catch (TokenExpiredException eje) {
+            log.info("Security exception for user {} - {}", eje.getClaims().getSubject(), eje.getMessage());
+            ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+    }
 
-        return Mono.just(new UsernamePasswordAuthenticationToken(subject, password, authorities));
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(JWTConfigurer.AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            String jwt = bearerToken.substring(7, bearerToken.length());
+            return jwt;
+        }
+        return null;
     }
 }
-
 

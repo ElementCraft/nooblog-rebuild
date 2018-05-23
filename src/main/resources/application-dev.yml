@@ -34,11 +34,10 @@ spring:
             hibernate.cache.use_second_level_cache: false
             hibernate.cache.use_query_cache: false
             hibernate.generate_statistics: false
-
-redis:
-    host: 119.23.149.25
-    password: daedalus
-    database: 3
+    redis:
+        host: 119.23.149.25
+        password: daedalus
+        database: 3
 
 
 server:

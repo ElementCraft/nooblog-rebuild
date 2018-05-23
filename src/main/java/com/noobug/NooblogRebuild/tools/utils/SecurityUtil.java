@@ -1,10 +1,6 @@
 package com.noobug.NooblogRebuild.tools.utils;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 import java.security.MessageDigest;
 
@@ -15,17 +11,6 @@ import java.security.MessageDigest;
  */
 @Component
 public class SecurityUtil {
-
-    /**
-     * 获取当前登录用户信息
-     *
-     * @return 鉴权信息
-     */
-    public Mono<Authentication> getCurrentUser() {
-        return ReactiveSecurityContextHolder.getContext()
-                .map(SecurityContext::getAuthentication)
-                .switchIfEmpty(Mono.empty());
-    }
 
     /**
      * MD5加密(大写）

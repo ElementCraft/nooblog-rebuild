@@ -26,14 +26,4 @@ public interface ArticleMapper extends EntityMapper<ArticleListDTO, Article> {
     @Mapping(target = "userColumn.id", source = "columnId")
     Article addNewArticleDTO2Article(AddNewArticleDTO addNewArticleDTO);
 
-    /**
-     * 文章分页转文章列表DTO分页
-     *
-     * @param articles 文章分页
-     * @return 文章列表DTO分页
-     */
-    default Page<ArticleListDTO> toListDTOPage(Page<Article> articles) {
-        return new PageImpl<>(toDto(articles.getContent()), articles.getPageable(), articles.getTotalElements());
-    }
-
 }
