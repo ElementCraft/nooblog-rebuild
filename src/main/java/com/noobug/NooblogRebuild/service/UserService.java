@@ -1,21 +1,25 @@
 package com.noobug.NooblogRebuild.service;
 
+import com.noobug.NooblogRebuild.consts.RedisKey;
 import com.noobug.NooblogRebuild.consts.error.UserError;
 import com.noobug.NooblogRebuild.domain.Role;
 import com.noobug.NooblogRebuild.domain.User;
 import com.noobug.NooblogRebuild.domain.UserColumn;
 import com.noobug.NooblogRebuild.domain.UserLog;
+import com.noobug.NooblogRebuild.redis.RedisBase;
 import com.noobug.NooblogRebuild.repository.UserColumnRepository;
 import com.noobug.NooblogRebuild.repository.UserLogRepository;
 import com.noobug.NooblogRebuild.repository.UserRepository;
 import com.noobug.NooblogRebuild.security.jwt.TokenProvider;
+import com.noobug.NooblogRebuild.tools.entity.ErrorCode;
 import com.noobug.NooblogRebuild.tools.entity.Result;
 import com.noobug.NooblogRebuild.tools.utils.SecurityUtil;
-import com.noobug.NooblogRebuild.web.dto.UserColumnInfoDTO;
 import com.noobug.NooblogRebuild.web.dto.UserInfoDTO;
 import com.noobug.NooblogRebuild.web.dto.UserLoginDTO;
+import com.noobug.NooblogRebuild.web.dto.UserRegDTO;
 import com.noobug.NooblogRebuild.web.mapper.UserColumnMapper;
 import com.noobug.NooblogRebuild.web.mapper.UserMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +35,7 @@ import static com.noobug.NooblogRebuild.tools.entity.Result.ok;
 /**
  * @author 小王子
  */
+@Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class UserService {
@@ -58,6 +63,9 @@ public class UserService {
 
     @Autowired
     private UserColumnMapper userColumnMapper;
+
+    @Autowired
+    private RedisBase<String, String> redis;
 
     public Page<User> findAllByPage(Pageable pageable) {
         return userRepository.findAllByDeleted(Boolean.FALSE, pageable);
@@ -145,7 +153,7 @@ public class UserService {
 
         Optional<User> user = userRepository.findByAccountAndDeleted(account, Boolean.FALSE);
 
-        if(!user.isPresent()){
+        if (!user.isPresent()) {
             return error(UserError.NON_EXIST_ID);
         }
 
@@ -170,19 +178,43 @@ public class UserService {
         Long currentUserId = securityUtil.getCurrentUserId();
 
         UserColumn col1 = userColumnRepository.findOne(parentId);
-        if(col1 == null){
+        if (col1 == null) {
             return error(UserError.Column.PARENT_IS_NULL);
         }
 
         User user = col1.getUser();
 
         // 非公开用户只有用户自己能获取栏目信息
-        if(!user.getId().equals(currentUserId) && !user.getIsPublic()){
+        if (!user.getId().equals(currentUserId) && !user.getIsPublic()) {
             return error(UserError.PRIVATE);
         }
 
         List<UserColumn> userColumns = userColumnRepository.findAllByParentIdAndIsDefault(parentId, Boolean.FALSE);
 
         return ok(userColumnMapper.userColumns2UserColumnInfoDTOs(userColumns));
+    }
+
+    /**
+     * 注册
+     *
+     * @param regDTO     注册信息
+     * @param remoteAddr IP
+     * @return
+     */
+    public Result reg(UserRegDTO regDTO, String remoteAddr) {
+        String redisKey = RedisKey.of(RedisKey.USER_REG_LOCK, remoteAddr);
+
+        if(redis.get(redisKey) != null){
+            return error(UserError.Reg.TOO_FREQUENTLY);
+        }
+
+        String account = regDTO.getAccount();
+        String email = regDTO.getEmail();
+        String passowrd = regDTO.getPassword();
+
+
+        //redis.setex(redisKey, String.valueOf(System.currentTimeMillis()), 20000);
+
+        return ok();
     }
 }

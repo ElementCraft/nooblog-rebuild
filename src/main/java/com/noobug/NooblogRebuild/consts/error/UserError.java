@@ -37,6 +37,8 @@ public interface UserError {
         ErrorCode NICKNAME_LENGTH = ErrorCode.of(9, "昵称长度不符合要求");
         ErrorCode NICKNAME_ALL_SPACE = ErrorCode.of(10, "昵称不能全为空格");
         ErrorCode EMAIL_INVALID = ErrorCode.of(11, "邮箱格式错误");
+        ErrorCode TOO_FREQUENTLY = ErrorCode.of(12, "短时间内不能多次注册帐号，歇会儿吧");
+
     }
 
     interface Info {

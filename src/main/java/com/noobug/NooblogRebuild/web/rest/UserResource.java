@@ -5,6 +5,7 @@ import com.noobug.NooblogRebuild.security.jwt.TokenProvider;
 import com.noobug.NooblogRebuild.service.UserService;
 import com.noobug.NooblogRebuild.tools.entity.Result;
 import com.noobug.NooblogRebuild.web.dto.UserLoginDTO;
+import com.noobug.NooblogRebuild.web.dto.UserRegDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,13 @@ public class UserResource {
     @PostMapping("/login")
     private ResponseEntity<Result> login(@RequestBody UserLoginDTO loginDTO, HttpServletRequest request){
         Result result = userService.login(loginDTO, request.getRemoteAddr());
+
+        return ok(result);
+    }
+
+    @PostMapping("/reg")
+    private ResponseEntity<Result> reg(@RequestBody UserRegDTO regDTO, HttpServletRequest request){
+        Result result = userService.reg(regDTO, request.getRemoteAddr());
 
         return ok(result);
     }

@@ -89,7 +89,7 @@ public class JwtAuthFilter extends GenericFilterBean {
         PathMatcher pathMatcher = new AntPathMatcher();
         String[] patterns = {
                 "/api/user/login",
-                "/api/user/logout"
+                "/api/user/reg"
         };
 
         for (String pattern : patterns) {

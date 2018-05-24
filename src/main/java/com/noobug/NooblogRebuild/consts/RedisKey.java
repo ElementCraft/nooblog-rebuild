@@ -6,6 +6,7 @@ package com.noobug.NooblogRebuild.consts;
  * @author noobug.com
  */
 public class RedisKey {
+    public static final String USER_REG_LOCK = "UserRegLock:::%s";
     public static final String USER = "Users";
     public static final String BOOK = "Books";
     public static final String BOOK_CHILD = "%s:%s";
