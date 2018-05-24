@@ -10,6 +10,7 @@ import com.noobug.NooblogRebuild.tools.entity.ErrorCode;
 public interface UserError {
 
     ErrorCode NON_EXIST_ID = ErrorCode.of(-1, "不存在该用户");
+    ErrorCode PRIVATE = ErrorCode.of(-2, "用户未公开个人信息和个人博客");
 
     /**
      * 登录相关错误

@@ -1,5 +1,9 @@
 package com.noobug.NooblogRebuild.tools.utils;
 
+import com.noobug.NooblogRebuild.web.dto.UserInfoDTO;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
@@ -11,6 +15,56 @@ import java.security.MessageDigest;
  */
 @Component
 public class SecurityUtil {
+
+    /**
+     * 获取当前登录人信息
+     *
+     * @return DTO
+     */
+    public UserInfoDTO getCurrentUser() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+
+        if (authentication != null && authentication.getDetails() instanceof UserInfoDTO) {
+            return (UserInfoDTO) authentication.getDetails();
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取当前登录人账号
+     *
+     * @return 账号
+     */
+    public String getCurrentUserAccount() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+
+        String account = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserInfoDTO) {
+            UserInfoDTO userInfoDTO = (UserInfoDTO) authentication.getPrincipal();
+            account = userInfoDTO.getAccount();
+        }
+        return account;
+    }
+
+    /**
+     * 获取当前登录人ID
+     *
+     * @return id
+     */
+    public Long getCurrentUserId() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+
+        Long id = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserInfoDTO) {
+            UserInfoDTO userInfoDTO = (UserInfoDTO) authentication.getPrincipal();
+            id = userInfoDTO.getId();
+        }
+        return id;
+    }
 
     /**
      * MD5加密(大写）

@@ -45,4 +45,6 @@ public interface JwtConst {
     String ISSUER_KEY = "jwt.token.issuer";
 
     String ISSUER = "noobug.org";
+
+    String AUTHENTICATION_HEADER = "Authorization";
 }

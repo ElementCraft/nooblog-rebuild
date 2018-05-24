@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +27,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class TokenProvider {
-    private static final String AUTHORITIES_KEY = "auth";
 
     @Autowired
     private ConfigUtil configUtil;
@@ -44,9 +44,12 @@ public class TokenProvider {
         String secret = configUtil.get(JwtConst.SECRET_KEY, JwtConst.SECRET);
         String issuer = configUtil.get(JwtConst.ISSUER_KEY, JwtConst.ISSUER);
 
-        String auths = authorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(JwtConst.AUTHORITIES_CLAIM_DELIMITER));
+        String auths = Optional.ofNullable(authorities)
+                .map(o -> authorities.stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.joining(JwtConst.AUTHORITIES_CLAIM_DELIMITER))
+                ).orElse("");
+
 
         Long tmpTime = System.currentTimeMillis();
         String token = null;
@@ -84,16 +87,6 @@ public class TokenProvider {
             log.error("[JWTToken] 解析失败！", e);
             return null;
         }
-
-
-        SecurityUser principal = new SecurityUser(claims.getSubject(), "",
-                authorities);
-        principal.setMerchantNo(loginInfoDTO.getMerchantNo());
-        principal.setName(loginInfoDTO.getName());
-        principal.setPhone(loginInfoDTO.getPhone());
-        principal.setUserId(loginInfoDTO.getId());
-
-
     }
 
     /**
