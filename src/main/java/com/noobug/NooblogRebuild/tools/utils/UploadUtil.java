@@ -55,7 +55,7 @@ public class UploadUtil {
                                 dir.mkdir();
                             }
 
-                            String newFileName = String.format("%d_%04d.%s", Instant.now().toEpochMilli(), atomicIndex.getAndIncrement(), ext);
+                            String newFileName = String.format("%d_%04d_%s.%s", Instant.now().toEpochMilli(), atomicIndex.getAndIncrement(), CommonUtil.randomString(4), ext);
                             String targetPath = savePath + newFileName;
 
                             try {

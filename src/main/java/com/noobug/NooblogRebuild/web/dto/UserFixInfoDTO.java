@@ -20,7 +20,7 @@ public class UserFixInfoDTO {
     /**
      * 性别
      *
-     * @see com.noobug.nooblog.consts.UserConst.Sex
+     * @see com.noobug.NooblogRebuild.consts.UserConst.Sex
      */
     private Integer sex;
 

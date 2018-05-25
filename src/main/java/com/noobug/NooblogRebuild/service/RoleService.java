@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -38,5 +39,26 @@ public class RoleService {
                 .map(userRole -> roleRepository.findOne(userRole.getRoleId()))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 通过CODE查找角色实体
+     *
+     * @param code code
+     * @return
+     */
+    public Optional<Role> findOneByCode(String code) {
+        return roleRepository.findOneByCodeAndDeleted(code, Boolean.FALSE);
+    }
+
+    /**
+     * 保存用户角色关联
+     *
+     * @param userRole
+     * @return
+     */
+    public UserRole saveUserRole(UserRole userRole) {
+
+        return userRoleRepository.save(userRole);
     }
 }

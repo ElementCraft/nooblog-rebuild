@@ -57,6 +57,7 @@ public interface UserError {
         ErrorCode DUPLICATE_TITLE = ErrorCode.of(3, "同级目录下栏目名称不能重复");
         ErrorCode PARENT_IS_NULL = ErrorCode.of(4, "指定的父级栏目不存在");
         ErrorCode PARENT_NO_LEVEL1 = ErrorCode.of(5, "指定的父级栏目不是一级栏目");
+        ErrorCode PARENT_NO_OWN = ErrorCode.of(6, "指定的父级栏目不属于该用户");
     }
 
 }

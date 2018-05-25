@@ -15,9 +15,7 @@ public interface UserColumnRepository extends JpaRepository<UserColumn, Long> {
 
     List<UserColumn> findAllByParentIdAndIsDefault(Long id, Boolean isDefault);
 
-    Long countByUser_IdAndTitle(Long id, String title);
-
     Long countByParentIdAndTitle(Long parentId, String title);
 
-    Long countByUserAccountAndTitle(String account, String title);
+    Long countByUserIdAndTitle(Long id, String title);
 }

@@ -42,8 +42,8 @@ public class SecurityUtil {
         Authentication authentication = securityContext.getAuthentication();
 
         String account = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserInfoDTO) {
-            UserInfoDTO userInfoDTO = (UserInfoDTO) authentication.getPrincipal();
+        if (authentication != null && authentication.getDetails() instanceof UserInfoDTO) {
+            UserInfoDTO userInfoDTO = (UserInfoDTO) authentication.getDetails();
             account = userInfoDTO.getAccount();
         }
         return account;
@@ -59,8 +59,8 @@ public class SecurityUtil {
         Authentication authentication = securityContext.getAuthentication();
 
         Long id = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserInfoDTO) {
-            UserInfoDTO userInfoDTO = (UserInfoDTO) authentication.getPrincipal();
+        if (authentication != null && authentication.getDetails() instanceof UserInfoDTO) {
+            UserInfoDTO userInfoDTO = (UserInfoDTO) authentication.getDetails();
             id = userInfoDTO.getId();
         }
         return id;
